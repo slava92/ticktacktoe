@@ -48,7 +48,7 @@ public class Board extends BoardLike {
 
         @Override
         public List<Position> occupiedPositions() {
-            return List.list();
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
