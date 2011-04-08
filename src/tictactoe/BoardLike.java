@@ -41,7 +41,7 @@ public abstract class BoardLike {
 
     public final String toString(final F2<Option<Player>, Position, Character> af) {
         final StringBuilder sb = new StringBuilder();
-        Position.positions().foreach(new F<Position, Unit>() {
+        Position.positions().sort(Position.positionOrd).foreach(new F<Position, Unit>() {
 
             @Override
             public Unit f(Position a) {

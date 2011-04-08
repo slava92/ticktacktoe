@@ -2,12 +2,14 @@ package tictactoe;
 
 import fj.F;
 import fj.F2;
+import fj.Ord;
+import fj.Ordering;
 import fj.data.List;
 import fj.data.Option;
 
 public enum Position {
 
-    C('a', 1), E('b', 2), N('c', 3), NE('d', 4), NW('e', 5), S('f', 6), SE('g', 7), SW('h', 8), W('i', 9);
+    C('_', 5), E('_', 6), N('_', 2), NE('_', 3), NW('_', 1), S('_', 8), SE('_', 9), SW('_', 7), W('_', 4);
     private final char chr;
     private final int nt;
 
@@ -66,4 +68,19 @@ public enum Position {
         Option<Position> nothing = Option.none();
         return positions().foldLeft(comb, nothing);
     }
+    private static final F<Position, F<Position, Ordering>> pof = new F<Position, F<Position, Ordering>>() {
+
+        @Override
+        public F<Position, Ordering> f(final Position a) {
+            F<Position, Ordering> pofc = new F<Position, Ordering>() {
+
+                @Override
+                public Ordering f(Position b) {
+                    return Ord.intOrd.compare(a.toInt(), b.toInt());
+                }
+            };
+            return pofc;
+        }
+    };
+    public static final Ord<Position> positionOrd = Ord.ord(pof);
 }
