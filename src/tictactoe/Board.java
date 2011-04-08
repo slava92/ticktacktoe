@@ -5,6 +5,10 @@ import fj.data.Option;
 
 public class Board extends BoardLike {
 
+    public MoveResult moveTo(Position p) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     @Override
     public Player whoseTurn() {
         throw new UnsupportedOperationException("Not supported yet.");
