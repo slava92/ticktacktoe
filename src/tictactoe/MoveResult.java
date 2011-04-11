@@ -43,26 +43,22 @@ public abstract class MoveResult {
     }
 
     public MoveResult tryMove(final Position p) {
-        P1<MoveResult> pao = P.p(positionAlreadyOccupied());
+        final MoveResult self = this;
         F<Board.FinishedBoard, MoveResult> go = new F<Board.FinishedBoard, MoveResult>() {
 
             @Override
             public MoveResult f(FinishedBoard a) {
-                return gameOver(a);
+                return self;
             }
         };
         F<Board, MoveResult> kp = new F<Board, MoveResult>() {
 
             @Override
             public MoveResult f(Board b) {
-                if (b.isOccupied(p)) {
-                    return positionAlreadyOccupied();
-                } else {
-                    return b.moveTo(p);
-                }
+                return b.moveTo(p);
             }
         };
-        return fold(pao, kp, go);
+        return fold(P.p(this), kp, go);
     }
 
     public static MoveResult positionAlreadyOccupied() {

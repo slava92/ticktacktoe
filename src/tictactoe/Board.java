@@ -13,7 +13,7 @@ public final class Board extends BoardLike {
     private final Player nextMove;
     private final TreeMap<Integer, Player> posMap;
 
-    private Board(Player nextMove, TreeMap<Integer, Player> posMap) {
+    protected Board(Player nextMove, TreeMap<Integer, Player> posMap) {
         this.nextMove = nextMove;
         this.posMap = posMap;
     }
@@ -75,16 +75,13 @@ public final class Board extends BoardLike {
             List.list(Position.N, Position.C, Position.S),
             List.list(Position.NE, Position.E, Position.SE),
             List.list(Position.NW, Position.C, Position.SE),
-            List.list(Position.NE, Position.C, Position.SE));
+            List.list(Position.SW, Position.C, Position.NE));
 
     private boolean isDraw() {
         return this.occupiedPositions().length() == Position.values().length;
     }
 
-    private boolean isGameOver() {
-        if (isDraw()) {
-            return true;
-        }
+    protected boolean isGameOver() {
         final Board self = this;
         F<List<Position>, Boolean> fLists = new F<List<Position>, Boolean>() {
 
@@ -102,7 +99,7 @@ public final class Board extends BoardLike {
 
                             @Override
                             public Option<Player> f(Option<Player> a, Option<Player> b) {
-                                if (a.isNone() || b.isNone() || a.some().toSymbol() == b.some().toSymbol()) {
+                                if (a.isNone() || b.isNone() || a.some().toSymbol() != b.some().toSymbol()) {
                                     return Option.none();
                                 } else {
                                     return a;
@@ -112,7 +109,11 @@ public final class Board extends BoardLike {
                 return diag.map(pos2plr).foldLeft1(allSame).isSome();
             }
         };
-        return Booleans.or(winners.map(fLists));
+        if (Booleans.or(winners.map(fLists))) {
+            return true;
+        } else {
+            return isDraw();
+        }
     }
 
     public static final class EmptyBoard extends BoardLike {
@@ -191,7 +192,11 @@ public final class Board extends BoardLike {
         }
 
         public GameResult result() {
-            return GameResult.win(board.whoseNotTurn());
+            if (board.isDraw()) {
+                return GameResult.Draw;
+            } else {
+                return GameResult.win(board.whoseNotTurn());
+            }
         }
     }
 }

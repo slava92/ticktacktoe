@@ -10,24 +10,25 @@ import tictactoe.Position;
 
 public class Main {
 
-    public static void main(String[] args) {
-        F2<Option<Player>, Position, Character> ft = new F2<Option<Player>, Position, Character>() {
+    public static F2<Option<Player>, Position, Character> simpleCharsF = new F2<Option<Player>, Position, Character>() {
 
-            @Override
-            public Character f(Option<Player> p, Position n) {
-                if (p.isNone()) {
-                    return n.toChar();
-                } else {
-                    return p.some().toSymbol();
-                }
+        @Override
+        public Character f(Option<Player> p, Position n) {
+            if (p.isNone()) {
+                return '_';
+            } else {
+                return p.some().toSymbol();
             }
-        };
+        }
+    };
+
+    public static void main(String[] args) {
         Board.EmptyBoard eb = new Board.EmptyBoard();
-        String brds = eb.toString(ft);
+        String brds = eb.toString(simpleCharsF);
         System.out.printf("EmptyBoard = \n%s\n", brds);
 
         Board br1 = eb.moveTo(Position.C);
-        System.out.printf("Board1 = \n%s\n", br1.toString(ft));
+        System.out.printf("Board1 = \n%s\n", br1.toString(simpleCharsF));
         MoveResult mr2 = br1.moveTo(Position.NW);
         F<Board, Board> kpf1 = new F<Board, Board>() {
 
@@ -37,6 +38,6 @@ public class Main {
             }
         };
         Board br2 = mr2.fold(null, kpf1, null);
-        System.out.printf("Board2 = \n%s\n", br2.toString(ft));
+        System.out.printf("Board2 = \n%s\n", br2.toString(simpleCharsF));
     }
 }

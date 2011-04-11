@@ -9,7 +9,7 @@ import fj.data.Option;
 
 public enum Position {
 
-    C('_', 5), E('_', 6), N('_', 2), NE('_', 3), NW('_', 1), S('_', 8), SE('_', 9), SW('_', 7), W('_', 4);
+    C('5', 5), E('6', 6), N('2', 2), NE('3', 3), NW('1', 1), S('8', 8), SE('9', 9), SW('7', 7), W('4', 4);
     private final char chr;
     private final int nt;
 
