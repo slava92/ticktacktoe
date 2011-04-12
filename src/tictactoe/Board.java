@@ -77,13 +77,9 @@ public final class Board extends BoardLike {
             List.list(Position.NW, Position.C, Position.SE),
             List.list(Position.SW, Position.C, Position.NE));
 
-    private boolean isDraw() {
-        return this.occupiedPositions().length() == Position.values().length;
-    }
-
-    protected boolean isGameOver() {
+    private boolean gotWinner() {
         final Board self = this;
-        F<List<Position>, Boolean> fLists = new F<List<Position>, Boolean>() {
+        F<List<Position>, Boolean> isWinner = new F<List<Position>, Boolean>() {
 
             @Override
             public Boolean f(List<Position> diag) {
@@ -109,11 +105,15 @@ public final class Board extends BoardLike {
                 return diag.map(pos2plr).foldLeft1(allSame).isSome();
             }
         };
-        if (Booleans.or(winners.map(fLists))) {
-            return true;
-        } else {
-            return isDraw();
-        }
+        return Booleans.or(winners.map(isWinner));
+    }
+
+    private boolean isDraw() {
+        return this.occupiedPositions().length() == Position.values().length;
+    }
+
+    protected boolean isGameOver() {
+        return isDraw() || gotWinner();
     }
 
     public static final class EmptyBoard extends BoardLike {
@@ -192,11 +192,10 @@ public final class Board extends BoardLike {
         }
 
         public GameResult result() {
-            if (board.isDraw()) {
-                return GameResult.Draw;
-            } else {
+            if (board.gotWinner())
                 return GameResult.win(board.whoseNotTurn());
-            }
+            else
+                return GameResult.Draw;
         }
     }
 }
