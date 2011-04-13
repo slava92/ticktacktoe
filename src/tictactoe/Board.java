@@ -12,17 +12,19 @@ public final class Board extends BoardLike {
 
     private final Player nextMove;
     private final TreeMap<Integer, Player> posMap;
+    private final int nMoves;
 
-    protected Board(Player nextMove, TreeMap<Integer, Player> posMap) {
+    protected Board(Player nextMove, TreeMap<Integer, Player> posMap, int nMoves) {
         this.nextMove = nextMove;
         this.posMap = posMap;
+        this.nMoves = nMoves;
     }
 
     public MoveResult moveTo(Position p) {
         if (posMap.contains(p.toInt())) {
             return MoveResult.positionAlreadyOccupied();
         } else {
-            Board nb = new Board(whoseNotTurn(), posMap.set(p.toInt(), whoseTurn()));
+            Board nb = new Board(whoseNotTurn(), posMap.set(p.toInt(), whoseTurn()), nmoves()+1);
             if (nb.isGameOver()) {
                 return MoveResult.gameOver(new FinishedBoard(nb));
             } else {
@@ -59,7 +61,7 @@ public final class Board extends BoardLike {
 
     @Override
     public int nmoves() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return nMoves;
     }
 
     @Override
@@ -120,7 +122,7 @@ public final class Board extends BoardLike {
 
         public Board moveTo(Position p) {
             TreeMap<Integer, Player> ppm = TreeMap.empty(Ord.intOrd);
-            return new Board(whoseTurn().alternate(), ppm.set(p.toInt(), whoseTurn()));
+            return new Board(whoseTurn().alternate(), ppm.set(p.toInt(), whoseTurn()), nmoves()+1);
         }
 
         public static Board.EmptyBoard empty() {
@@ -145,7 +147,7 @@ public final class Board extends BoardLike {
 
         @Override
         public int nmoves() {
-            throw new UnsupportedOperationException("Not supported yet.");
+            return 0;
         }
 
         @Override
