@@ -13,18 +13,20 @@ public final class Board extends BoardLike {
     private final Player nextMove;
     private final TreeMap<Integer, Player> posMap;
     private final int nMoves;
+    private final Option<Board> before;
 
-    protected Board(Player nextMove, TreeMap<Integer, Player> posMap, int nMoves) {
+    protected Board(Player nextMove, TreeMap<Integer, Player> posMap, int nMoves, Option<Board> before) {
         this.nextMove = nextMove;
         this.posMap = posMap;
         this.nMoves = nMoves;
+        this.before = before;
     }
 
     public MoveResult moveTo(Position p) {
         if (posMap.contains(p.toInt())) {
             return MoveResult.positionAlreadyOccupied();
         } else {
-            Board nb = new Board(whoseNotTurn(), posMap.set(p.toInt(), whoseTurn()), nmoves()+1);
+            Board nb = new Board(whoseNotTurn(), posMap.set(p.toInt(), whoseTurn()), nmoves()+1, Option.some(this));
             if (nb.isGameOver()) {
                 return MoveResult.gameOver(new FinishedBoard(nb));
             } else {
@@ -34,7 +36,11 @@ public final class Board extends BoardLike {
     }
 
     public TakenBack takeBack() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (before.isNone()) {
+            return TakenBack.isEmpty();
+        } else {
+            return TakenBack.isBoard(before.some());
+        }
     }
 
     @Override
@@ -122,7 +128,8 @@ public final class Board extends BoardLike {
 
         public Board moveTo(Position p) {
             TreeMap<Integer, Player> ppm = TreeMap.empty(Ord.intOrd);
-            return new Board(whoseTurn().alternate(), ppm.set(p.toInt(), whoseTurn()), nmoves()+1);
+            Option<Board> noBoard = Option.none();
+            return new Board(whoseTurn().alternate(), ppm.set(p.toInt(), whoseTurn()), nmoves()+1, noBoard);
         }
 
         public static Board.EmptyBoard empty() {
@@ -190,7 +197,7 @@ public final class Board extends BoardLike {
         }
 
         public Board takeBack() {
-            throw new UnsupportedOperationException("Not supported yet.");
+            return board.before.some();
         }
 
         public GameResult result() {
